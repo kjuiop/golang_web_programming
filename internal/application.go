@@ -34,7 +34,42 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 }
 
 func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
-	return UpdateResponse{}, nil
+
+	if app.checkEmptyValue(request.ID) {
+		return UpdateResponse{}, errEmptyId
+	}
+
+	if app.checkEmptyValue(request.UserName) {
+		return UpdateResponse{}, errEmptyUsername
+	}
+
+	if app.checkEmptyValue(request.MembershipType) {
+		return UpdateResponse{}, errEmptyMemberShip
+	}
+
+	if app.notMemberShipType(request.MembershipType) {
+		return UpdateResponse{}, errNotApplyMemberShip
+	}
+
+	data := app.repository.data
+
+	_, existsId := data[request.ID]
+	if !existsId {
+		return UpdateResponse{}, errNotFoundId
+	}
+
+	_, existsUsername := data[request.UserName]
+	if existsUsername {
+		return UpdateResponse{}, errAlreadyExistUsername
+	}
+
+	member := data[request.ID]
+	member.UserName = request.UserName
+	member.MembershipType = request.MembershipType
+
+	data[request.ID] = member
+
+	return UpdateResponse{member.ID, member.UserName, member.MembershipType}, nil
 }
 
 func (app *Application) Delete(id string) error {
