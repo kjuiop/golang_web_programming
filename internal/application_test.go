@@ -16,19 +16,42 @@ func TestCreateMembership(t *testing.T) {
 	})
 
 	t.Run("이미 등록된 사용자 이름이 존재할 경우 실패한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		req2 := CreateRequest{"jenny", "naver"}
+		res2, err2 := app.Create(req2)
+		assert.ErrorIs(t, err2, errAlreadyExistUsername)
+		assert.Empty(t, res2.ID)
 
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{"", "naver"}
+		res, err := app.Create(req)
+		assert.ErrorIs(t, err, errEmptyUsername)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("멤버십 타입을 입력하지 않은 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{"jenny", ""}
+		res, err := app.Create(req)
+		assert.ErrorIs(t, err, errEmptyMemberShip)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("naver/toss/payco 이외의 타입을 입력한 경우 실패한다.", func(t *testing.T) {
-
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		req := CreateRequest{"jenny", "kakao"}
+		res, err := app.Create(req)
+		assert.ErrorIs(t, err, errNotApplyMemberShip)
+		assert.Empty(t, res.ID)
 	})
 }
 

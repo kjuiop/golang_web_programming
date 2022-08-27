@@ -21,3 +21,15 @@ type UpdateResponse struct {
 	UserName       string
 	MembershipType string
 }
+
+type SelectRequest struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
+
+type SelectResponse struct {
+	ID             string
+	UserName       string
+	MembershipType string
+}
