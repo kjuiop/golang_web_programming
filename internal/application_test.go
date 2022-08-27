@@ -151,14 +151,38 @@ func TestUpdate(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	t.Run("멤버십을 삭제한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
 
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		deleteErr := app.Delete("jenny")
+		assert.Nil(t, deleteErr)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
 
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		deleteErr := app.Delete("")
+		assert.ErrorIs(t, deleteErr, errEmptyId)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
 
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		deleteErr := app.Delete("jake")
+		assert.ErrorIs(t, deleteErr, errNotFoundId)
 	})
 }

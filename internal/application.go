@@ -73,6 +73,20 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 }
 
 func (app *Application) Delete(id string) error {
+
+	if app.checkEmptyValue(id) {
+		return errEmptyId
+	}
+
+	data := app.repository.data
+
+	_, existsId := data[id]
+	if !existsId {
+		return errNotFoundId
+	}
+
+	delete(data, id)
+
 	return nil
 }
 
