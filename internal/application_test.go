@@ -186,3 +186,51 @@ func TestDelete(t *testing.T) {
 		assert.ErrorIs(t, deleteErr, errNotFoundId)
 	})
 }
+
+func TestSelect(t *testing.T) {
+	t.Run("전체 멤버십 정보를 조회한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+		_, err := app.SelectAll()
+		assert.Nil(t, err)
+	})
+
+	t.Run("존재하는 특정 사용자이름을 조회한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		selectReq := SelectRequest{"jenny"}
+		selectRes, selectErr := app.SelectById(selectReq)
+		assert.Nil(t, selectErr)
+		assert.NotEmpty(t, selectRes.data)
+		assert.Equal(t, selectRes.data.UserName, req.UserName)
+		assert.Equal(t, selectRes.data.MembershipType, req.MembershipType)
+	})
+
+	t.Run("존재하지 않는 사용자이름을 조회한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+
+		selectReq := SelectRequest{"jenny"}
+		selectRes, selectErr := app.SelectById(selectReq)
+		assert.ErrorIs(t, selectErr, errNotFoundException)
+		assert.Empty(t, selectRes.data)
+	})
+
+	t.Run("특정 아이디를 조회할 때 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
+		app := NewApplication(*NewRepository(map[string]Membership{}))
+
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+
+		selectReq := SelectRequest{""}
+		selectRes, selectErr := app.SelectById(selectReq)
+		assert.ErrorIs(t, selectErr, errEmptyId)
+		assert.Empty(t, selectRes.data)
+	})
+
+}

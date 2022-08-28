@@ -23,13 +23,13 @@ type UpdateResponse struct {
 }
 
 type SelectRequest struct {
-	ID             string
-	UserName       string
-	MembershipType string
+	ID string
 }
 
-type SelectResponse struct {
-	ID             string
-	UserName       string
-	MembershipType string
+type SelectAllResponse struct {
+	data map[string]Membership
+}
+
+type SelectOneResponse struct {
+	data Membership
 }

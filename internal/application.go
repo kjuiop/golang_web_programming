@@ -90,8 +90,25 @@ func (app *Application) Delete(id string) error {
 	return nil
 }
 
-func (app *Application) Select(request SelectRequest) (SelectResponse, error) {
-	return SelectResponse{}, nil
+func (app *Application) SelectAll() (SelectAllResponse, error) {
+	data := app.repository.data
+	return SelectAllResponse{data}, nil
+}
+
+func (app *Application) SelectById(request SelectRequest) (SelectOneResponse, error) {
+
+	if app.checkEmptyValue(request.ID) {
+		return SelectOneResponse{}, errEmptyId
+	}
+
+	data := app.repository.data
+
+	val, exists := data[request.ID]
+	if !exists {
+		return SelectOneResponse{}, errNotFoundException
+	}
+
+	return SelectOneResponse{val}, nil
 }
 
 func (app *Application) checkEmptyValue(s string) bool {
