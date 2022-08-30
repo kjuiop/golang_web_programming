@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -19,14 +20,24 @@ func TestGolang(t *testing.T) {
 
 	t.Run("goroutine에서 slice에 값 추가해보기", func(t *testing.T) {
 		var numbers []int
+		var mu sync.Mutex
+		var wg sync.WaitGroup
+		wg.Add(100)
 		for i := 0; i < 100; i++ {
-			go func() {
+			go func(i int) {
+				defer wg.Done()
+
+				mu.Lock()
 				numbers = append(numbers, i)
-			}()
+				mu.Unlock()
+			}(i)
 		}
+		wg.Wait()
 
 		var expected []int // actual : [0 1 2 ... 99]
-		expected = numbers
+		for i := 0; i < 100; i++ {
+			expected = append(expected, i)
+		}
 		assert.ElementsMatch(t, expected, numbers)
 	})
 
