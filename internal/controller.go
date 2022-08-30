@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
 )
 
@@ -14,9 +15,33 @@ func NewController(service Service) *Controller {
 }
 
 func (controller *Controller) Create(c echo.Context) error {
-	return c.JSON(http.StatusOK, "hello world")
+	var req CreateRequest
+	if err := c.Bind(&req); err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	res, err := controller.service.Create(req)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusCreated, res)
 }
 
 func (controller *Controller) GetByID(c echo.Context) error {
-	return c.JSON(http.StatusOK, "hello world")
+	id := c.Param("id")
+
+	res, err := controller.service.GetByID(id)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	return c.JSON(http.StatusOK, res)
+}
+
+func Log(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		log.Println(c.Request().Method)
+		return next(c)
+	}
 }
