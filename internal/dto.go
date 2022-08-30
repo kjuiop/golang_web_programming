@@ -27,3 +27,15 @@ type GetResponse struct {
 	UserName       string `json:"user_name"`
 	MembershipType string `json:"membership_type"`
 }
+
+type SelectRequest struct {
+	ID string
+}
+
+type SelectAllResponse struct {
+	data map[string]Membership
+}
+
+type SelectOneResponse struct {
+	data Membership
+}
