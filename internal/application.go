@@ -21,7 +21,7 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 		return CreateResponse{}, errNotApplyMemberShip
 	}
 
-	exists := app.repository.checkDuplicateId(request.UserName)
+	exists := app.repository.checkExistId(request.UserName)
 	if exists {
 		return CreateResponse{}, errAlreadyExistUsername
 	}
@@ -51,7 +51,7 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 		return UpdateResponse{}, errNotApplyMemberShip
 	}
 
-	existsId := app.repository.checkDuplicateId(request.ID)
+	existsId := app.repository.checkExistId(request.ID)
 	if !existsId {
 		return UpdateResponse{}, errNotFoundId
 	}
@@ -78,7 +78,7 @@ func (app *Application) Delete(id string) error {
 		return errEmptyId
 	}
 
-	existsId := app.repository.checkDuplicateId(id)
+	existsId := app.repository.checkExistId(id)
 	if !existsId {
 		return errNotFoundId
 	}
@@ -125,8 +125,4 @@ func (app *Application) notMemberShipType(s string) bool {
 	default:
 		return true
 	}
-}
-
-func (app *Application) isDuplicateUsername(s string) bool {
-	return true
 }

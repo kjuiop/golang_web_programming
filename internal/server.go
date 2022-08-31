@@ -35,10 +35,17 @@ func (s *Server) Routes(e *echo.Echo) {
 
 func RouteMemberships(e *echo.Group, c Controller) {
 
-	e.GET("/memberships", c.GetByID, Log)
 	e.POST("/memberships", c.Create, middleware.RequestIDWithConfig(middleware.RequestIDConfig{
 		Generator: func() string {
 			return "x-My-Request-Header"
 		},
 	}))
+
+	e.PUT("/memberships", c.Update)
+
+	e.DELETE("/memberships/:id", c.Delete)
+
+	e.GET("/memberships", c.GetAll)
+
+	e.GET("/memberships/:id", c.GetByID)
 }

@@ -1,6 +1,9 @@
 package internal
 
-import "errors"
+import (
+	"errors"
+	"log"
+)
 
 var ErrNotFoundMembership = errors.New("not found membership")
 
@@ -13,11 +16,23 @@ func NewRepository(data map[string]Membership) *Repository {
 }
 
 func (r *Repository) Create(membership Membership) {
-	r.data[membership.UserName] = membership
+	r.data[membership.ID] = membership
 }
 
-func (r *Repository) checkDuplicateId(id string) bool {
+func (r *Repository) Update(membership Membership) {
+	r.data[membership.ID] = membership
+}
+
+func (r *Repository) Delete(id string) {
+	delete(r.data, id)
+}
+
+func (r *Repository) checkExistId(id string) bool {
+
 	_, existsId := r.data[id]
+
+	log.Println(existsId)
+
 	return existsId
 }
 
@@ -28,4 +43,8 @@ func (r *Repository) GetById(id string) (Membership, error) {
 		}
 	}
 	return Membership{}, ErrNotFoundMembership
+}
+
+func (r *Repository) GetAll() map[string]Membership {
+	return r.data
 }
