@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	"log"
 )
 
 type Service struct {
@@ -34,9 +33,6 @@ func (s *Service) Update(request UpdateRequest) (UpdateResponse, error) {
 	if !exists {
 		return UpdateResponse{}, errAlreadyExistUsername
 	}
-
-	log.Println("in")
-	log.Println(request)
 
 	membership := Membership{request.ID, request.UserName, request.MembershipType}
 	s.repository.Update(membership)

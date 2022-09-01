@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"log"
 )
 
 var ErrNotFoundMembership = errors.New("not found membership")
@@ -28,11 +27,7 @@ func (r *Repository) Delete(id string) {
 }
 
 func (r *Repository) checkExistId(id string) bool {
-
 	_, existsId := r.data[id]
-
-	log.Println(existsId)
-
 	return existsId
 }
 

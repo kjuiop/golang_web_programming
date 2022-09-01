@@ -32,7 +32,6 @@ func (controller *Controller) Update(c echo.Context) error {
 
 	var req UpdateRequest
 	if err := c.Bind(&req); err != nil {
-		log.Println(req)
 		return echo.ErrBadRequest
 	}
 
