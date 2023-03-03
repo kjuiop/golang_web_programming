@@ -21,12 +21,12 @@ func (app *Application) Create(request CreateRequest) (CreateResponse, error) {
 		return CreateResponse{}, errNotApplyMemberShip
 	}
 
-	data := app.repository.data
-
-	_, exists := data[request.UserName]
+	exists := app.repository.checkExistId(request.UserName)
 	if exists {
 		return CreateResponse{}, errAlreadyExistUsername
 	}
+
+	data := app.repository.data
 
 	data[request.UserName] = Membership{request.UserName, request.UserName, request.MembershipType}
 
@@ -51,12 +51,12 @@ func (app *Application) Update(request UpdateRequest) (UpdateResponse, error) {
 		return UpdateResponse{}, errNotApplyMemberShip
 	}
 
-	data := app.repository.data
-
-	_, existsId := data[request.ID]
+	existsId := app.repository.checkExistId(request.ID)
 	if !existsId {
 		return UpdateResponse{}, errNotFoundId
 	}
+
+	data := app.repository.data
 
 	_, existsUsername := data[request.UserName]
 	if existsUsername {
@@ -78,12 +78,12 @@ func (app *Application) Delete(id string) error {
 		return errEmptyId
 	}
 
-	data := app.repository.data
-
-	_, existsId := data[id]
+	existsId := app.repository.checkExistId(id)
 	if !existsId {
 		return errNotFoundId
 	}
+
+	data := app.repository.data
 
 	delete(data, id)
 
@@ -125,8 +125,4 @@ func (app *Application) notMemberShipType(s string) bool {
 	default:
 		return true
 	}
-}
-
-func (app *Application) isDuplicateUsername(s string) bool {
-	return true
 }

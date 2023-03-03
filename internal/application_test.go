@@ -20,10 +20,10 @@ func TestCreateMembership(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		req2 := CreateRequest{"jenny", "naver"}
-		res2, err2 := app.Create(req2)
-		assert.ErrorIs(t, err2, errAlreadyExistUsername)
-		assert.Empty(t, res2.ID)
+		req := CreateRequest{"jenny", "naver"}
+		res, err := app.Create(req)
+		assert.ErrorIs(t, err, errAlreadyExistUsername)
+		assert.Empty(t, res.ID)
 
 	})
 
@@ -58,12 +58,12 @@ func TestUpdate(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"jenny", "jake", "toss"}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.Nil(t, updateErr)
-		assert.NotEmpty(t, updateRes.ID)
-		assert.Equal(t, updateReq.UserName, updateRes.UserName)
-		assert.Equal(t, updateReq.MembershipType, updateRes.MembershipType)
+		req := UpdateRequest{"jenny", "jake", "toss"}
+		res, err := app.Update(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.ID)
+		assert.Equal(t, req.UserName, res.UserName)
+		assert.Equal(t, req.MembershipType, res.MembershipType)
 	})
 
 	t.Run("수정하려는 사용자의 이름이 이미 존재하는 사용자 이름이라면 예외 처리한다.", func(t *testing.T) {
@@ -72,10 +72,10 @@ func TestUpdate(t *testing.T) {
 			"jake":  {"jake", "jake", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"jenny", "jake", "naver"}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.ErrorIs(t, updateErr, errAlreadyExistUsername)
-		assert.Empty(t, updateRes.ID)
+		req := UpdateRequest{"jenny", "jake", "naver"}
+		res, err := app.Update(req)
+		assert.ErrorIs(t, err, errAlreadyExistUsername)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("멤버십 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -83,10 +83,10 @@ func TestUpdate(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"", "jenny", "toss"}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.ErrorIs(t, updateErr, errEmptyId)
-		assert.Empty(t, updateRes.ID)
+		req := UpdateRequest{"", "jenny", "toss"}
+		res, err := app.Update(req)
+		assert.ErrorIs(t, err, errEmptyId)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("사용자 이름을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -94,10 +94,10 @@ func TestUpdate(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"jenny", "", "toss"}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.ErrorIs(t, updateErr, errEmptyUsername)
-		assert.Empty(t, updateRes.ID)
+		req := UpdateRequest{"jenny", "", "toss"}
+		res, err := app.Update(req)
+		assert.ErrorIs(t, err, errEmptyUsername)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("멤버쉽 타입을 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -105,10 +105,10 @@ func TestUpdate(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"jenny", "jenny", ""}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.ErrorIs(t, updateErr, errEmptyMemberShip)
-		assert.Empty(t, updateRes.ID)
+		req := UpdateRequest{"jenny", "jenny", ""}
+		res, err := app.Update(req)
+		assert.ErrorIs(t, err, errEmptyMemberShip)
+		assert.Empty(t, res.ID)
 	})
 
 	t.Run("주어진 멤버쉽 타입이 아닌 경우, 예외 처리한다.", func(t *testing.T) {
@@ -116,10 +116,10 @@ func TestUpdate(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		updateReq := UpdateRequest{"jenny", "jenny", "kakao"}
-		updateRes, updateErr := app.Update(updateReq)
-		assert.ErrorIs(t, updateErr, errNotApplyMemberShip)
-		assert.Empty(t, updateRes.ID)
+		req := UpdateRequest{"jenny", "jenny", "kakao"}
+		res, err := app.Update(req)
+		assert.ErrorIs(t, err, errNotApplyMemberShip)
+		assert.Empty(t, res.ID)
 	})
 }
 
@@ -129,8 +129,8 @@ func TestDelete(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		deleteErr := app.Delete("jenny")
-		assert.Nil(t, deleteErr)
+		err := app.Delete("jenny")
+		assert.Nil(t, err)
 	})
 
 	t.Run("id를 입력하지 않았을 때 예외 처리한다.", func(t *testing.T) {
@@ -138,8 +138,8 @@ func TestDelete(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		deleteErr := app.Delete("")
-		assert.ErrorIs(t, deleteErr, errEmptyId)
+		err := app.Delete("")
+		assert.ErrorIs(t, err, errEmptyId)
 	})
 
 	t.Run("입력한 id가 존재하지 않을 때 예외 처리한다.", func(t *testing.T) {
@@ -147,8 +147,8 @@ func TestDelete(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		deleteErr := app.Delete("jake")
-		assert.ErrorIs(t, deleteErr, errNotFoundId)
+		err := app.Delete("jake")
+		assert.ErrorIs(t, err, errNotFoundId)
 	})
 }
 
@@ -164,19 +164,19 @@ func TestSelect(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		selectReq := SelectRequest{"jenny"}
-		selectRes, selectErr := app.SelectById(selectReq)
-		assert.Nil(t, selectErr)
-		assert.NotEmpty(t, selectRes.data)
+		req := SelectRequest{"jenny"}
+		res, err := app.SelectById(req)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, res.data)
 	})
 
 	t.Run("존재하지 않는 사용자이름을 조회한다.", func(t *testing.T) {
 		app := NewApplication(*NewRepository(map[string]Membership{}))
 
-		selectReq := SelectRequest{"jenny"}
-		selectRes, selectErr := app.SelectById(selectReq)
-		assert.ErrorIs(t, selectErr, errNotFoundException)
-		assert.Empty(t, selectRes.data)
+		req := SelectRequest{"jenny"}
+		res, err := app.SelectById(req)
+		assert.ErrorIs(t, err, errNotFoundException)
+		assert.Empty(t, res.data)
 	})
 
 	t.Run("특정 아이디를 조회할 때 아이디를 입력하지 않은 경우, 예외 처리한다.", func(t *testing.T) {
@@ -184,10 +184,10 @@ func TestSelect(t *testing.T) {
 			"jenny": {"jenny", "jenny", "naver"},
 		}))
 
-		selectReq := SelectRequest{""}
-		selectRes, selectErr := app.SelectById(selectReq)
-		assert.ErrorIs(t, selectErr, errEmptyId)
-		assert.Empty(t, selectRes.data)
+		req := SelectRequest{""}
+		res, err := app.SelectById(req)
+		assert.ErrorIs(t, err, errEmptyId)
+		assert.Empty(t, res.data)
 	})
 
 }
